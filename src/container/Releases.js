@@ -1,11 +1,27 @@
 import React, { Component } from 'react';
+import ReleaseForm from '../ui/ReleaseForm';
+import ReleasesTable from '../ui/ReleasesTable';
 
 export default class Releases extends Component {
     constructor(props) {
         super(props);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.removeRow = this.removeRow.bind(this);
         this.state = {
             releases: []
         }
+    }
+    handleSubmit(e,{name, date}) {
+        e.preventDefault();
+        var state = this.state;
+        var myRelease = {
+            id: state.releases.length + 1,
+            releaseName: name,
+            releaseDate: date
+        }
+        this.setState({
+            releases: state.releases.concat(myRelease)
+        });
     }
     componentDidMount() {
         this.setState({
@@ -36,34 +52,19 @@ export default class Releases extends Component {
     removeRow(index) {
         let releases = [...this.state.releases];
         releases.splice(index, 1);
-        this.setState({releases});
+        this.setState({ releases });
     }
     render() {
         return (
-            <table className="table table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Release Name</th>
-                        <th scope="col">Release Date</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.state.releases.map((release, index) => {
-                        return (
-                            <tr key={index}>
-                                <th scope="row">{release.id}</th>
-                                <td>{release.releaseName}</td>
-                                <td>{release.releaseDate}</td>
-                                <td>
-                                    <button className="btn btn-danger" onClick={this.removeRow.bind(this)} index={index}>X</button>
-                                </td>
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
+            <div className="container">
+                <ReleaseForm 
+                    submitHandler={this.handleSubmit}
+                />
+                <ReleasesTable
+                    releases= { this.state.releases }
+                    removeRow = { this.removeRow }
+                />
+            </div>
         )
     }
 }
